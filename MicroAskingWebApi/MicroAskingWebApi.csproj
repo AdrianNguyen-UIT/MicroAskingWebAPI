@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="vi-mrc-base.onnx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="vi-mrc-base.onnx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlingFireNuget" Version="0.1.8" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MongoDBDataAccess\MongoDBDataAccess.csproj" />
+  </ItemGroup>
+
+</Project>

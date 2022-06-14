@@ -1,0 +1,12 @@
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\bin\Debug\net6.0\MongoDBDataAccess.deps.json
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\bin\Debug\net6.0\MongoDBDataAccess.dll
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\bin\Debug\net6.0\MongoDBDataAccess.pdb
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.csproj.AssemblyReference.cache
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.GeneratedMSBuildEditorConfig.editorconfig
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.AssemblyInfoInputs.cache
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.AssemblyInfo.cs
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.csproj.CoreCompileInputs.cache
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.dll
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\refint\MongoDBDataAccess.dll
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\MongoDBDataAccess.pdb
+E:\Devs\MicroAskingWebApi\MongoDBDataAccess\obj\Debug\net6.0\ref\MongoDBDataAccess.dll
