@@ -10,18 +10,16 @@ using LuceneDirectory = Lucene.Net.Store.Directory;
 
 namespace MicroAskingWebApi.Services
 {
-    public class LuceneSearcher : ISingletonService
+    public class LuceneSearcher : ISingletonAService
     {
         private readonly LuceneVersion _luceneVersion;
         private readonly Analyzer _standardAnalyzer;
         private readonly IndexWriter _contextWriter;
         private readonly IndexWriter _questionWriter;
         private readonly int _queryCount;
-        private readonly IConfiguration _configuration;
 
         public LuceneSearcher(IConfiguration configuration)
         {
-            _configuration = configuration;
             _queryCount = configuration.GetValue<int>("LuceneSettings:QueryCount");
 
             _luceneVersion = LuceneVersion.LUCENE_48;

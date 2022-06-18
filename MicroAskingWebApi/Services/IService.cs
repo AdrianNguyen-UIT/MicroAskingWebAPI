@@ -1,4 +1,6 @@
 ﻿namespace MicroAskingWebApi.Services
 {
-    public interface ISingletonService {}
+    public interface ISingletonAService {}
+
+    public interface ISingletonBService {}
 }

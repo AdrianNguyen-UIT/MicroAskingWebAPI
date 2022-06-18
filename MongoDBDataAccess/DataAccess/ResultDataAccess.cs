@@ -40,5 +40,12 @@ namespace MongoDBDataAccess.DataAccess
             var filter = Builders<ResultDBModel>.Filter.Eq("Id", result.Id);
             return collection.ReplaceOneAsync(filter, result, new ReplaceOptions { IsUpsert = true });
         }
+
+        public Task<List<ResultDBModel>> GetTopResults(int limit)
+        {
+            var collection = ConnectToMongo<ResultDBModel>(CollectionName);
+            var sorter = Builders<ResultDBModel>.Sort.Descending(x => x.Count);
+            return collection.Find(_ => true).Sort(sorter).Limit(limit).ToListAsync();
+        }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "M7YPXvcAfd9tLq/2AP3jOCUeUNJZyM2PyIb6BqhTAsI=",
+  "Source": "MicroAskingWebApi",
+  "BasePath": "_content/MicroAskingWebApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

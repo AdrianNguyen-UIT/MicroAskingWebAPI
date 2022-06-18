@@ -1,5 +1,4 @@
-﻿using BlingFire;
-using MicroAskingWebApi.Clients;
+﻿using MicroAskingWebApi.Clients;
 using MicroAskingWebApi.Models;
 using MicroAskingWebApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +14,18 @@ namespace MicroAskingWebApi.Controllers
     public class MicroAskingController : ControllerBase
     {
         private readonly LuceneSearcher _luceneSearcher;
-        private readonly IConfiguration _configuration;
-        private readonly ulong _toIdsTokenizer;
-        private readonly ulong _toWordsTokenizer;
+        private readonly SocketService _socketClient;
+        private readonly string _connectionString;
+        private readonly string _sepToken;
+        private readonly int _limtTopResults;
 
-        public MicroAskingController(ISingletonService singletonService, IConfiguration configuration)
+        public MicroAskingController(ISingletonAService luceneService, ISingletonBService socketService, IConfiguration configuration)
         {
-            _luceneSearcher = (LuceneSearcher)singletonService;
-            _configuration = configuration;
-            _toIdsTokenizer = BlingFireUtils.LoadModel(_configuration.GetValue<string>("Tokenizer:ToIdsPath"));
-            _toWordsTokenizer = BlingFireUtils.LoadModel(_configuration.GetValue<string>("Tokenizer:ToWordsPath"));
+            _luceneSearcher = (LuceneSearcher)luceneService;
+            _socketClient = (SocketService)socketService;
+            _connectionString = configuration.GetValue<string>("ConnectionStrings:Default");
+            _sepToken = configuration.GetValue<string>("CustomToken:Sep");
+            _limtTopResults = configuration.GetValue<int>("TopResultsLimit");
         }
 
         [HttpPost]
@@ -39,11 +40,12 @@ namespace MicroAskingWebApi.Controllers
 
         [HttpGet]
         [Route("ask/{question}")]
-        public async Task<ActionResult<ResultDBModel>> Ask(string question, [FromServices] InferenceHttpClient client)
+        public async Task<ActionResult<ResultDBModel>> Ask(string question)
         {
+            if (question[question.Length - 1] != '?') question += "?";
             if (string.IsNullOrWhiteSpace(question))
                 return BadRequest("Invalid question!: " + question);
-            ResultDataAccess db = new ResultDataAccess(_configuration.GetValue<string>("ConnectionStrings:Default"));
+            ResultDataAccess db = new ResultDataAccess(_connectionString);
             var cachedResult = await db.GetResultByQuestion(question);
 
             if (cachedResult.Count != 0)
@@ -55,61 +57,21 @@ namespace MicroAskingWebApi.Controllers
             }
 
             QAInput input = await _luceneSearcher.Search(question);
-            //Result[] results = await client.Inference(input);
+            Result[] results = await _socketClient.Send(input, _sepToken);
 
-            int port = 13000;
-            IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-
-
-            var bytesCollection = input.GetBytes();
-            Result[] results = new Result[bytesCollection.Length];
-            Console.WriteLine(bytesCollection.Length);
-            for (int index = 0; index < bytesCollection.Length; index++)
-            {
-                TcpClient aswpClient = new TcpClient();
-                await aswpClient.ConnectAsync(localAddr, port);
-                NetworkStream networkStream = aswpClient.GetStream();
-
-                var byt = bytesCollection[index];
-                await networkStream.WriteAsync(byt);
-
-                byte[] data = new byte[byt.Length];
-
-                int bytes = await networkStream.ReadAsync(data);
-                //string responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-
-
-                // Process respone here
-
-                results[index] = new Result();
-                results[index].Domain = input.Contexts[index].Domain;
-                results[index].Context = input.Contexts[index].Content;
-                networkStream.Close();
-                aswpClient.Close();
-            }
-
-            //_luceneSearcher.SaveQuestion(question);
+            _luceneSearcher.SaveQuestion(question);
             ResultDBModel resultDBModel = new() { Question = question, Count = 1 };
 
-            //foreach (var result in results)
-            //{
-            //    resultDBModel.Answers.Add(new AnswerDBModel()
-            //    { 
-            //        Score_Start = result.Score_Start,
-            //        Score_End = result.Score_End,
-            //        Score = result.Score,
-            //        Domain = result.Domain,
-            //        Answer = result.Answer,
-            //        Context = result.Context
-            //    });
-            //}
-            //await db.CreateResult(resultDBModel);
+            foreach (var result in results)
+            {
+                resultDBModel.Answers.Add(new AnswerDBModel()
+                {
+                    Domain = result.Domain,
+                    Answer = result.Answer,
+                });
+            }
+            await db.CreateResult(resultDBModel);
             return Ok(resultDBModel);
-        }
-
-        private int ToInt32(object value, int int32)
-        {
-            throw new NotImplementedException();
         }
 
         [HttpGet]
@@ -121,6 +83,15 @@ namespace MicroAskingWebApi.Controllers
 
             string[] results = await _luceneSearcher.SearchForHints(hint);
             return Ok(results);
+        }
+
+        [HttpGet]
+        [Route("statistics/get-top-questions")]
+        public async Task<ActionResult<ResultDBModel[]>> GetTopQuestion()
+        {
+            ResultDataAccess db = new ResultDataAccess(_connectionString);
+            var results = await db.GetTopResults(_limtTopResults);
+            return Ok(results.ToArray());
         }
     }
 }
